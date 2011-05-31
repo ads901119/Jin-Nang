@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>錦囊妙計</title>
+<link type="text/css" href="css/redmond/jquery-ui-1.8.12.custom.css" rel="stylesheet" />	
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>
+<!-- Google Map API v3 -->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<!-- END Google Map API v3 -->
+<script type="text/javascript" src="js/main.js"></script>
+
+</head>
+
+<body>
+<div class="siteContainer">
+	<div class="header">
+		<h1>錦囊妙計 Jin Nang</h1>
+    </div>
+    <div id="tabs" class="tabs">
+		<ul>
+        	<li><div id="prompt"> 歡迎回來, <span id="username"> {{username}}</span> !! </div> </li>
+            <li><div id="space"></div> </li>
+			<li><a href="#tabs-1">察看錦囊</a></li>
+			<li><a href="#tabs-2">好友管理</a></li>
+			<li><a href="#tabs-3">帳號管理</a></li>
+        </ul>
+		<div id="tabs-1">
+			<div id="map_canvas" style="width: 840px; height: 420px"></div> 
+            <div class="typeBtns">
+                <div id="format" style="display:inline-block">
+                    <input type="checkbox" id="check1" /><label for="check1">公共</label>
+                    <input type="checkbox" id="check2" /><label for="check2">好友</label>
+                    <input type="checkbox" id="check3" /><label for="check3">我的</label>
+                </div>
+                <div style="display:inline-block">
+                	<input type="checkbox" id="moreToggle" /><label for="moreToggle">More</label>
+                </div>
+            </div>
+            <div class="advFilters" style="display:none">
+                <div class="timeFilter">
+                        <label for="amount">Time Range:</label>
+                        <input type="text" id="amount" style="width:200px; border:0; color:#f6931d;" />
+                    <div id="slider-range"></div>
+                </div>
+            </div>
+    	</div>
+		<div id="tabs-2">
+    		不能同年同月同日生，但願同年同月同日死！
+            <p>
+            <img src="images/san.jpg" alt="san" />
+            </p>
+    	</div>
+		<div id="tabs-3">
+    		要管理啥好？
+        </div>
+	</div>
+    <hr />
+	<!-- facebook -->
+	<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww2.ee.ntu.edu.tw%2F%7Eb96901179%2F&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80" 
+scrolling="no" 
+frameborder="0" 
+style="border:none; overflow:hidden; width:450px; height:70px;" 
+allowTransparency="true"></iframe>
+<!-- END facebook -->
+<div class="footer"> Copyright 2011 Ju Ge Cheng Ya </div>
+    
+</div>
+</body>
+</html>

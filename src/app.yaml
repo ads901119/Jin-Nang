@@ -9,6 +9,11 @@ builtins:
 handlers:
 - url: /html
   static_dir: html/
-
+- url: /css
+  static_dir: css/
+- url: /images
+  static_dir: images/
+- url: /js
+  static_dir: js/
 - url: /.*
   script: main.py

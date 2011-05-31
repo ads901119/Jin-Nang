@@ -1,0 +1,32 @@
+@charset "UTF-8";
+/* CSS Document */
+body {
+	font-size: 90%;
+	font-family: Verdana, Geneva, sans-serif;
+	margin: 0;
+}
+.siteContainer {
+	width: 900px;
+	margin: 0px auto;
+	padding: 0px;
+}
+.footer {
+
+}
+div.demo { 
+	padding: 10px !important; 
+}
+div.typeBtns {
+	margin: 3px auto;
+	width: 300px;
+}
+div#prompt {
+	margin-top: 5px;
+	margin-bottom: 5px;	
+}
+div#space {
+	width: 400px;
+}
+span#username {
+	text-decoration:underline;
+}

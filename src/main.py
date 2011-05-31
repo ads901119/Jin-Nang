@@ -1,6 +1,10 @@
+from google.appengine.dist import use_library
+use_library('django', '1.2')
+
 from django.utils import simplejson as json
 import datetime
 from google.appengine.ext import webapp
+from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import urlfetch
 from google.appengine.ext import db
@@ -23,7 +27,8 @@ class Messagelog(db.Model):
     
 class MainPage(webapp.RequestHandler):
     def get(self):
-        print "Hello, JinNang"
+        output = template.render('html/main.html', {'username': 'Alan'})
+        self.response.out.write(output)
 
 class Post(webapp.RequestHandler):
     def post(self):
