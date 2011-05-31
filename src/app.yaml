@@ -7,13 +7,14 @@ builtins:
 - datastore_admin: on
 
 handlers:
-- url: /html
-  static_dir: html/
 - url: /css
-  static_dir: css/
+  static_dir: css
+  
 - url: /images
-  static_dir: images/
+  static_dir: images
+  
 - url: /js
-  static_dir: js/
+  static_dir: js
+  
 - url: /.*
   script: main.py
