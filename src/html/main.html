@@ -10,6 +10,7 @@
 <!-- Google Map API v3 -->
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <!-- END Google Map API v3 -->
+<script type="text/javascript" src="js/map.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 
 </head>
@@ -21,7 +22,7 @@
     </div>
     <div id="tabs" class="tabs">
 		<ul>
-        	<li><div id="prompt"> 歡迎回來, <span id="username"> {{username}}</span> !! </div> </li>
+        	<li><div id="prompt"> 歡迎回來, <span id="username"> 阿亮</span> !! </div> </li>
             <li><div id="space"></div> </li>
 			<li><a href="#tabs-1">察看錦囊</a></li>
 			<li><a href="#tabs-2">好友管理</a></li>
@@ -58,15 +59,30 @@
         </div>
 	</div>
     <hr />
-	<!-- facebook -->
-	<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww2.ee.ntu.edu.tw%2F%7Eb96901179%2F&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80" 
-scrolling="no" 
-frameborder="0" 
-style="border:none; overflow:hidden; width:450px; height:70px;" 
-allowTransparency="true"></iframe>
-<!-- END facebook -->
 <div class="footer"> Copyright 2011 Ju Ge Cheng Ya </div>
+<!-- Widgets start -->
+    <div id="new-marker-form" title="New Message">
+        <form>
+        <fieldset>
+            <label for="title">標題</label>
+            <input type="text" name="title" id="title" class="text ui-widget-content ui-corner-all" />
+            <label for="message">訊息</label>
+  			<textarea name="message" id="message" cols="30" rows="5" class="text ui-widget-content ui-corner-all" style="resize: none;"></textarea>
+            <div id="radio">
+            	屬性
+                <input type="radio" id="radio1" name="type"  value="0" /><label for="radio1">公共</label>
+                <input type="radio" id="radio2" name="type" checked="checked" value="1" /><label for="radio2">好友</label>
+                <input type="radio" id="radio3" name="type" value="2" /><label for="radio3">我的</label>
+            </div>
+        </fieldset>
+        </form>
+    </div>
     
+    <span id="toolbar" class="ui-widget-header ui-corner-all widgets">
+        <button id="new" class="menuBtn">留下訊息</button> <br/>
+        <button id="other" class="menuBtn">Have fun</button>
+    </span>
+<!-- Widgets end -->    
 </div>
 </body>
 </html>
