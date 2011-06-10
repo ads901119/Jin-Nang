@@ -18,38 +18,13 @@
 <body>
 <div class="siteContainer">
 	<div class="header">
-		<img src="images/logo.png" alt="Jin Nang logo" style="margin-left: 10px;"/>
-		
-	</div>
-	<div class="toolbar">
-		<div id="prompt" class="toolbarBtn"> 歡迎回來, <span id="username">{{username}}</span> !! </div>
+		<div id="prompt"> 歡迎回來, <span id="username">{{username}}</span> !! </div>
 		{% if username == "guest" %}
-		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn">登入</a>
+		<a href="{{logIOurl}}" class="logBtn">登入</a>
 		{% else %}
-		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn">登出</a>
+		<a href="{{logIOurl}}" class="logBtn">登出</a>
 		{% endif %}
-		
-		<div class="typeBtns toolbarBtn">
-        	<div id="format" style="display:inline-block">
-            	<input type="checkbox" id="check1" /><label for="check1">公共</label>
-               	{% if username == "guest" %}
-                <input type="checkbox" id="check2" disabled="disabled" /><label for="check2">好友</label>
-                <input type="checkbox" id="check3" disabled="disabled" /><label for="check3">我的</label>
-                {% else %}
-                <input type="checkbox" id="check2" /><label for="check2">好友</label>
-                <input type="checkbox" id="check3" /><label for="check3">我的</label>       
-                {% endif %}
-            </div>
-            <div style="display:inline-block">
-              	<input type="checkbox" id="moreToggle" /><label for="moreToggle">More</label>
-           	</div>
-        </div>
 	</div>
-	<div class="map">
-		<div id="map_canvas" style="width: 100%; height: 100%;"></div> 
-	</div>
-	
-	<!--
     <div id="tabs" class="tabs">
 		<ul>
 			{% if username == "guest" %}
@@ -61,8 +36,22 @@
 			{% endif %}
         </ul>
 		<div id="tabs-1">
-			
-            
+			<div id="map_canvas" style="width: 100%; height: 420px"></div> 
+            <div class="typeBtns">
+                <div id="format" style="display:inline-block">
+                    <input type="checkbox" id="check1" /><label for="check1">公共</label>
+                    {% if username == "guest" %}
+                    <input type="checkbox" id="check2" disabled="disabled" /><label for="check2">好友</label>
+                    <input type="checkbox" id="check3" disabled="disabled" /><label for="check3">我的</label>
+                    {% else %}
+                    <input type="checkbox" id="check2" /><label for="check2">好友</label>
+                    <input type="checkbox" id="check3" /><label for="check3">我的</label>       
+                    {% endif %}
+                </div>
+                <div style="display:inline-block">
+                	<input type="checkbox" id="moreToggle" /><label for="moreToggle">More</label>
+                </div>
+            </div>
             <div class="advFilters" style="display:none">
                 <div class="timeFilter">
                         <label for="amount">Time Range:</label>
@@ -87,7 +76,7 @@
         </div>
         {% endif %}
 	</div>
--->
+
 <!-- Widgets start -->
     <div id="new-marker-form" title="New Message">
         <form>
@@ -106,14 +95,14 @@
         </form>
     </div>
     
-    <div id="rightMenu" class="ui-widget-header ui-corner-all widgets">
+    <span id="toolbar" class="ui-widget-header ui-corner-all widgets">
     	{% if username == "guest" %}
-    	<a href="{{logIOurl}}" id="logBtn2">登入</a>之後，就可留下訊息
+    	<a href="{{logIOurl}}" class="logBtn">登入</a>之後，就可留下訊息
     	{% else %}
         <button id="new" class="menuBtn">留下訊息</button> <br/>
         <button id="other" class="menuBtn">Have fun</button>
         {% endif %}
-    </div>
+    </span>
 <!-- Widgets end -->    
 </div>
 </body>

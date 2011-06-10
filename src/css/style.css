@@ -1,9 +1,9 @@
 @charset "UTF-8";
 /* CSS Document */
 body {
-	font-size: 90%;
 	font-family: Verdana, Geneva, sans-serif;
 	margin: 0;
+	padding: 0;
 }
 .text { 
 	margin-bottom:12px; 
@@ -15,46 +15,55 @@ fieldset {
 	border:0; 
 	margin-top:25px; 
 }
-.menuBtn {
-	width: 100px;
-}
 .siteContainer {
-	width: 900px;
-	margin: 0px auto;
+	width: 100%;
+	margin: 0px;
 	padding: 0px;
 }
+.header {
+	height: 70px;
+	z-index: -99;
+}
+.map {
+	width: 100%;
+	display: block;
+	position: absolute;
+	overflow: hidden;
+	top: 110px;
+	bottom: 0px;
+	z-index: -2;
+}
 .widgets {
-	display:none;
-	position:absolute;
+	display: none;
+	position: absolute;
 }
-#toolbar {
+.toolbar {
+	box-shadow: 0px 1px 7px #888;
+	-webkit-box-shadow: 0px 1px 7px #888;
+	width: 100%;
+	height: 40px;
+	background-color: #EEE;
+}
+.toolbarBtn {
+	display: inline-block;
+	height: 30px;
+	vertical-align: middle;
+}
+#rightMenu {
 	padding: 2px 2px;
-	font-size:12px;
+	font-size:14px;
+	overflow: hidden;
+	width: 120px;
 }
-#map-menu {
-	position:absolute;
-	display:block;
-	background-color:#CCC;
-	width: 200px;
-	left: 50px;
-	top: 200px;	
-}
-.footer {
-
-}
-div.demo { 
-	padding: 10px !important; 
+.menuBtn {
+	width: 100%;
 }
 div.typeBtns {
 	margin: 3px auto;
 	width: 300px;
 }
-div#prompt {
-	margin-top: 5px;
-	margin-bottom: 5px;	
-}
-div#space {
-	width: 400px;
+li#space {
+	clear: both;
 }
 span#username {
 	text-decoration:underline;

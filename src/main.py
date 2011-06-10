@@ -1,15 +1,12 @@
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-
 from google.appengine.dist import use_library
 use_library('django', '1.2')
 
 from django.utils import simplejson as json
 import datetime
+from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.api import urlfetch
 from google.appengine.ext import db
 
 class Messagelog(db.Model):
@@ -30,14 +27,20 @@ class Messagelog(db.Model):
     
 class MainPage(webapp.RequestHandler):
     def get(self):
-        output = template.render('html/main.html', {'username': 'Alan'})
+        user = users.get_current_user()
+        if user:
+            output = template.render('html/main.html', {'username': user.nickname(),
+                                                        'logIOurl': users.create_logout_url('/')})
+        else:
+            output = template.render('html/main.html', {'username': 'guest',
+                                                        'logIOurl' :  users.create_login_url('/')})
         self.response.out.write(output)
 
 class Post(webapp.RequestHandler):
     def post(self):
         myname = self.request.get('sender')
-        mytitle = self.request.get('title')
-        mymessage = self.request.get('message')
+        mytitle = self.request.get('title').encode('unicode-escape')
+        mymessage = self.request.get('message').encode('unicode-escape')
         
         locateX = str(self.request.get('location')).split(',')[0]
         locateY = str(self.request.get('location')).split(',')[1]
@@ -96,12 +99,12 @@ class Check(webapp.RequestHandler):
         if(key):
             #ret = db.GqlQuery("SELECT * FROM Messagelog WHERE key=:1",key)
             e = db.get(key)
-            jlist = []
-            jlist.append({'Title':str(e.title)})
-            jlist.append({'Draft':str(e.message)})
-            jlist.append({'Receiver':str(e.receiver)})
-            jlist.append({'Location':str(e.location)})
-            jlist.append({'Datetime':str(e.posttime)})
+            jlist = {}
+            jlist['Title'] = str(e.title)
+            jlist['Draft'] = str(e.message)
+            jlist['Receiver'] = str(e.receiver)
+            jlist['Location'] = str(e.location)
+            jlist['Datetime'] = str(e.posttime)
             self.response.out.write(json.dumps(jlist))
 
         else:
@@ -109,14 +112,15 @@ class Check(webapp.RequestHandler):
                               "ORDER BY posttime DESC", sender)
             allist = []
             for e in ret:
-                jlist = []
-                jlist.append({'Key':str(e.key())})
-                jlist.append({'Title':str(e.title)})
-                jlist.append({'Draft':str(e.message)})
-                jlist.append({'Receiver':str(e.receiver)})
-                jlist.append({'Location':str(e.location)})
-                jlist.append({'Datetime':str(e.posttime)})
+                jlist = {}
+                jlist['Key'] = str(e.key())
+                jlist['Title'] = str(e.title)
+                jlist['Draft'] = str(e.message)
+                jlist['Receiver'] = str(e.receiver)
+                jlist['Location'] = str(e.location)
+                jlist['Datetime'] = str(e.posttime)
                 allist.append(jlist)
+                
             self.response.out.write(json.dumps(allist))
 
 class Remove(webapp.RequestHandler):

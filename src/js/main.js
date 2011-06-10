@@ -4,9 +4,11 @@ $(function(){
 	$('#tabs').tabs();
 	
 	//button set
-	$( "#format" ).buttonset();
-	$( "div#radio" ).buttonset();
-	$( "#moreToggle" ).button();
+	$("#format").buttonset();
+	$("div#radio").buttonset();
+	$("#moreToggle").button();
+	$('#logBtn').button();
+	$('#logBtn2').button();
 	
 	$( "#new-marker-form" ).dialog({
 			height: 400,
@@ -15,12 +17,12 @@ $(function(){
 			modal: true,
 			autoOpen: false,
 			buttons: {"建立": submitMsg,
-							Cancel: function() { $( this ).dialog( "close" );}
-						}
+					 Cancel: function() { $( this ).dialog( "close" );}}
 	});	
 	
 	$( "#new" ).button().click(showDialog);
 	$( "#other" ).button();
+
 	//Time slider
 	$( "#slider-range" ).slider({
 		range: true,
@@ -37,11 +39,13 @@ $(function(){
 $(document).ready(function(e){
 	$('#moreToggle').click(toggleFilters);
 	initialize();
+	loadMessage();
 });
 
 /*
 *  Javascript functions
 */
+
 function submitMsg(e){
 	$.ajax({
 	   type: "POST",
@@ -63,8 +67,22 @@ function submitMsg(e){
 	$( "#new-marker-form" ).dialog('close');
 	placeMarker(eventLocation, $('textarea#message').val());
 }
+function loadMessage(){
+	$.ajax({
+	   type: "POST",
+	   dataType: "json",
+	   url: "check",
+	   data: { 
+		   sender:'Andrew'
+		   },
+	   success: loadMarker
+	});
+}
+function unidec(str) { 
+	return unescape(str.replace(/\\/g, "%")) 
+} 
 function showDialog(e){
-	$("#toolbar").fadeOut();
+	$("#rightMenu").fadeOut();
 	$( "#new-marker-form" ).dialog('open');
 }
 function toggleFilters(e){

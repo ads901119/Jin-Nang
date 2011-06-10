@@ -58,7 +58,7 @@ function initialize() {
 	geocoder = new google.maps.Geocoder();
 }
 function singleClick(event) {
-	$("#toolbar").fadeOut();
+	$("#rightMenu").fadeOut();
 }
 function placeMe (pos) {
 	var marker = new google.maps.Marker({
@@ -72,6 +72,16 @@ function placeMe (pos) {
     	infowindow.open(map,marker);
   	});
 	markers.push(marker);
+}
+function loadMarker(msg) {
+	//alert(msg);
+	for (x in msg){	
+		//alert(msg[x].Location);
+		var latlon = msg[x].Location.split(",");
+		var tmp = new google.maps.LatLng(latlon[0], latlon[1]);
+		var m = unidec(msg[x].Draft);
+		placeMarker(tmp, m);
+	}
 }
 function placeMarker(loc, msg) {
 	var marker = new google.maps.Marker({
@@ -92,7 +102,7 @@ function showMenu(event) {
 	leftVal=mouseX+"px";
   	topVal=mouseY+"px";
 
-	$("#toolbar").css({display:'none',left:leftVal,top:topVal}).slideDown('fast');
+	$("#rightMenu").css({display:'none',left:leftVal,top:topVal}).slideDown('fast');
 	/*
 	$( "#map-menu" ).dialog({
 			height: 170,
