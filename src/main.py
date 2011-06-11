@@ -48,9 +48,12 @@ class Post(webapp.RequestHandler):
         
         mytype = self.request.get('type')
         myreceiver = self.request.get('receiver')
+         
+        #begin = datetime.datetime.strptime(str(self.request.get('start')),'%Y-%m-%d-%H-%M-%S')
+        #end = datetime.datetime.strptime(str(self.request.get('end')),'%Y-%m-%d-%H-%M-%S')
         
-        begin = datetime.datetime.strptime(str(self.request.get('begintime')),'%Y-%m-%d-%H-%M-%S')
-        end = datetime.datetime.strptime(str(self.request.get('endtime')),'%Y-%m-%d-%H-%M-%S')
+        begin = datetime.datetime.strptime(str(self.request.get('start')),'%Y-%m-%d')
+        end = datetime.datetime.strptime(str(self.request.get('end')),'%Y-%m-%d')
         
         messagelog = Messagelog(sender=str(myname),title=str(mytitle),message=str(mymessage),\
                                 location=mylocation,type=str(mytype),receiver=str(myreceiver),\
@@ -92,36 +95,33 @@ class Ask(webapp.RequestHandler):
      
                 
 class Check(webapp.RequestHandler):
-    def post(self):
+    def get(self):
         sender = str(self.request.get('sender'))
-        key = str(self.request.get('key'))
-        
-        if(key):
-            #ret = db.GqlQuery("SELECT * FROM Messagelog WHERE key=:1",key)
-            e = db.get(key)
-            jlist = {}
-            jlist['Title'] = str(e.title)
-            jlist['Draft'] = str(e.message)
-            jlist['Receiver'] = str(e.receiver)
-            jlist['Location'] = str(e.location)
-            jlist['Datetime'] = str(e.posttime)
-            self.response.out.write(json.dumps(jlist))
 
-        else:
-            ret = db.GqlQuery("SELECT * FROM Messagelog WHERE sender =:1 "
+        ret = db.GqlQuery("SELECT * FROM Messagelog WHERE sender =:1 "
                               "ORDER BY posttime DESC", sender)
-            allist = []
-            for e in ret:
-                jlist = {}
-                jlist['Key'] = str(e.key())
-                jlist['Title'] = str(e.title)
-                jlist['Draft'] = str(e.message)
-                jlist['Receiver'] = str(e.receiver)
-                jlist['Location'] = str(e.location)
-                jlist['Datetime'] = str(e.posttime)
-                allist.append(jlist)
+        allist = []
+        for e in ret:
+            jlist = {}
+            jlist['title'] = str(e.title).decode('unicode-escape')
+            jlist['Receiver'] = str(e.receiver)
+            
+            loc = {}
+            loc['lat'] = str(e.location.lat)
+            loc['lon'] = str(e.location.lon)
+            jlist['point'] = loc
+            
+            jlist['start'] = str(e.beginTime)
+            if(e.beginTime != e.endTime):
+                jlist['end'] = str(e.endTime)
+            
+            options = {}
+            options['description'] = str(e.message).decode('unicode-escape')
+            jlist['options'] = options
+            
+            allist.append(jlist)
                 
-            self.response.out.write(json.dumps(allist))
+        self.response.out.write(json.dumps(allist))
 
 class Remove(webapp.RequestHandler):
     def post(self):

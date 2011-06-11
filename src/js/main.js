@@ -1,5 +1,7 @@
 // JavaScript Document
-$(function(){
+var tm;
+
+$(document).ready(function(e){
 	// Tabs
 	$('#tabs').tabs();
 	
@@ -7,11 +9,12 @@ $(function(){
 	$("#format").buttonset();
 	$("div#radio").buttonset();
 	$("#moreToggle").button();
+	$('#moreToggle').click(toggleFilters);
 	$('#logBtn').button();
 	$('#logBtn2').button();
 	
 	$( "#new-marker-form" ).dialog({
-			height: 400,
+			height: 500,
 			width: 300,
 			resizable: false,
 			modal: true,
@@ -22,24 +25,65 @@ $(function(){
 	
 	$( "#new" ).button().click(showDialog);
 	$( "#other" ).button();
+	
+	var dates = $( "#from, #to" ).datepicker({
+			showButtonPanel: true,
+			dateFormat: "yy-mm-dd",
+			onSelect: function( selectedDate ) {
+				var option = this.id == "from" ? "minDate" : "maxDate",
+					instance = $( this ).data( "datepicker" ),
+					date = $.datepicker.parseDate(
+						instance.settings.dateFormat ||
+						$.datepicker._defaults.dateFormat,
+						selectedDate, instance.settings );
+				dates.not( this ).datepicker( "option", option, date );
+			}
+		});
+	
+	// timemap
+	var jsonURL = "check?sender=" + uname;
 
-	//Time slider
-	$( "#slider-range" ).slider({
-		range: true,
-		min: 0,
-		max: 70,
-		values: [ 0, 24 ],
-		slide: function( event, ui ) {
-			$( "#amount" ).val( ui.values[ 0 ] + "小時 - " + ui.values[ 1 ] + "小時後的訊息" );
-		}
-	});
-	$( "#amount" ).val( $( "#slider-range" ).slider( "values", 0 ) + "小時 - " + $( "#slider-range" ).slider( "values", 1 ) + "小時後的訊息");
-});
-
-$(document).ready(function(e){
-	$('#moreToggle').click(toggleFilters);
-	initialize();
-	loadMessage();
+	tm = TimeMap.init({
+        mapId: "map_canvas",               // Id of map div element (required)
+        timelineId: "timeline",     // Id of timeline div element (required)
+        options: {
+            eventIconPath: "images/timemap/",
+            showMapTypeCtrl: false,
+            showMapCtrl: false,
+            mapType: "normal"
+        },
+        datasets: [
+            {
+            	title: "JSON String Dataset",
+            	theme: "orange",
+            	id: "mydata",
+            	type: "json_string",
+            	options: {
+                	url: jsonURL    // Must be a local URL
+            	}
+        	}
+        ],
+        bandInfo: [ 
+            { 
+               width:          "70%", 
+               intervalUnit:   Timeline.DateTime.WEEK, 
+		       intervalPixels: 80,
+            }, 
+            { 
+               width:          "30%", 
+               intervalUnit:   Timeline.DateTime.MONTH, 
+		       intervalPixels: 330, 
+               overview:       true
+            } 
+       ]
+    });
+    map = tm.getNativeMap();
+    google.maps.event.addListener(map, "rightclick", showMenu);
+	google.maps.event.addListener(map, "click", singleClick);
+	
+	//$("#timelinecontainer").set
+	$('div#timelinecontainer').addClass('minimize');
+	initializeMap();
 });
 
 /*
@@ -51,17 +95,21 @@ function submitMsg(e){
 	   type: "POST",
 	   url: "post",
 	   data: { 
-		   sender:'Andrew',
+		   sender: uname,
 		   title: $('input#title').val(),
 		   message: $('textarea#message').val(),
 		   location: eventLocation.lat() + ',' + eventLocation.lng(),
 		   type: $('input:radio[name=type]:checked').val(),
 		   receiver: 'Shawn',
-		   begintime: '2011-06-02-11-10-00',
-		   endtime: '2011-06-02-11-11-00'
+		   start: $('input#from').val(),
+		   end: $('input#to').val()
 		   },
 	   success: function(msg){
-		 alert( "Data Saved: " + msg );
+		 alert( "Data Saved!!");
+		 $('input#title').val("");
+		 $('textarea#message').val("");
+		 $('input#from').val("");
+		 $('input#to').val("");
 	   }
 	});
 	$( "#new-marker-form" ).dialog('close');
@@ -85,7 +133,21 @@ function showDialog(e){
 	$("#rightMenu").fadeOut();
 	$( "#new-marker-form" ).dialog('open');
 }
+
+var showTimeline = false;
 function toggleFilters(e){
-	$('.header').slideToggle();
-	$('.advFilters').slideToggle();
+	if(showTimeline) {
+		$('#timeline').addClass('hideBack');
+		$('.header').slideDown("", function(){
+			$('div#timelinecontainer').addClass('minimize');
+		});
+		showTimeline = false;
+	}
+	else {
+		$('div#timelinecontainer').removeClass('minimize');
+		$('.header').slideUp( "", function (){
+			$('#timeline').removeClass('hideBack');
+		});
+		showTimeline = true;
+	}
 }

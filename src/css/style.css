@@ -13,7 +13,7 @@ body {
 fieldset { 
 	padding:0; 
 	border:0; 
-	margin-top:25px; 
+	margin-top:10px; 
 }
 .siteContainer {
 	width: 100%;
@@ -21,7 +21,7 @@ fieldset {
 	padding: 0px;
 }
 .header {
-	height: 70px;
+	height: 80px;
 	z-index: -99;
 }
 .map {
@@ -29,41 +29,61 @@ fieldset {
 	display: block;
 	position: absolute;
 	overflow: hidden;
-	top: 110px;
+	top: 120px;
 	bottom: 0px;
-	z-index: -2;
+	z-index: -1;
 }
-.widgets {
+.hideBack {
+	z-index: -3;
+}
+.rightMenu {
 	display: none;
 	position: absolute;
+	padding: 5px;
+	background-color: #CCC;
+	border-radius: 5px;
+	box-shadow: 3px 3px 5px #888;
+	-webkit-box-shadow: 3px 3px 5px #888;
 }
 .toolbar {
 	box-shadow: 0px 1px 7px #888;
 	-webkit-box-shadow: 0px 1px 7px #888;
 	width: 100%;
 	height: 40px;
-	background-color: #EEE;
+	background-color: #DDD;
+	z-index: 210;
 }
 .toolbarBtn {
 	display: inline-block;
 	height: 30px;
 	vertical-align: middle;
 }
+.minimize {
+	height: 0px!important;
+}
+div#timelinecontainer {
+	height: 80px;
+	z-index: -5;
+}
+div#timeline{
+	width: 100%;
+	height: 100%;
+	font-size: 12px;
+	background: #CCC;
+}
 #rightMenu {
 	padding: 2px 2px;
 	font-size:14px;
 	overflow: hidden;
 	width: 120px;
+	z-index: 1000;
 }
 .menuBtn {
 	width: 100%;
 }
 div.typeBtns {
 	margin: 3px auto;
-	width: 300px;
-}
-li#space {
-	clear: both;
+	width: 400px;
 }
 span#username {
 	text-decoration:underline;

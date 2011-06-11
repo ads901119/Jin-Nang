@@ -17,17 +17,15 @@ function getMouseCoordinates(event)
 	mouseY = ev.pageY;
 }
 
-function initialize() {
-	//var latlng = new google.maps.LatLng(25.02,121.54);
+function initializeMap() {
+	/*
 	var myOptions = {
-		zoom: 15,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		disableDefaultUI: true,
 		};
 	
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-	//map.disableDragging(); 
-	//map.disableDoubleClickZoom();
+	*/
 	var browserSupportFlag = false;
 	if(navigator.geolocation) {
     	browserSupportFlag = true;
@@ -35,6 +33,7 @@ function initialize() {
       		initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
 			placeMe(initialLocation);
       		map.setCenter(initialLocation);
+      		map.setZoom(13);
     	}, 
 		function() {
       		handleNoGeolocation(browserSupportFlag);
@@ -50,12 +49,8 @@ function initialize() {
       		initialLocation = new google.maps.LatLng(25.02,121.54);
     	}
     	map.setCenter(initialLocation);
-		 placeMe(initialLocation);
+		placeMe(initialLocation);
   	}
-	
-	google.maps.event.addListener(map, "rightclick", showMenu);
-	google.maps.event.addListener(map, "click", singleClick);
-	geocoder = new google.maps.Geocoder();
 }
 function singleClick(event) {
 	$("#rightMenu").fadeOut();
@@ -74,7 +69,6 @@ function placeMe (pos) {
 	markers.push(marker);
 }
 function loadMarker(msg) {
-	//alert(msg);
 	for (x in msg){	
 		//alert(msg[x].Location);
 		var latlon = msg[x].Location.split(",");
@@ -89,40 +83,22 @@ function placeMarker(loc, msg) {
 		map: map,
 		content: msg
 		});
+		
 	google.maps.event.addListener(marker, 'click', function() {
 		infowindow.setContent(marker.content);
     	infowindow.open(map,marker);
   	});
+  	
 	markers.push(marker);
 }
 
 function showMenu(event) {
 	eventLocation = event.latLng;
-	//$("div#map-menu").slideDown();
+
 	leftVal=mouseX+"px";
   	topVal=mouseY+"px";
 
 	$("#rightMenu").css({display:'none',left:leftVal,top:topVal}).slideDown('fast');
-	/*
-	$( "#map-menu" ).dialog({
-			height: 170,
-			width: 300,
-			resizable: false,
-			modal: true
-	});
-	
-	
-	var marker = new google.maps.Marker({
-		position: event.latLng,
-		map: map
-		});
-	
-	markers.push(marker);
-		
-	content = "TODO";
-    infowindow.setContent(content);
-	infowindow.open(map, marker);
-	*/
 }
 
 //Google map end
