@@ -159,7 +159,7 @@ Mapstraction: {
 	setCenterAndZoom: function(point, zoom) { 
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		//map.setCenter(pt);  **JinNang**
+		map.setCenter(pt);
 		map.setZoom(zoom);
 	},
 	
@@ -533,7 +533,7 @@ Marker: {
 	},
 	
 	closeBubble: function() {
-		if (this.hasOwnProperty('proprietary_infowindow')) {
+		if (this.hasOwnProperty('proprietary_infowindow') && this.proprietary_infowindow) {
 			this.proprietary_infowindow.close();
 			this.closeInfoBubble.fire({'marker': this});
 			this.proprietary_infowindow = null;

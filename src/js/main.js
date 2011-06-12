@@ -59,7 +59,6 @@ $(document).ready(function(e){
     	
     }
     else {
-    	var jsonURL = "check?sender=" + userkey;
     	var dataset = [
         	{
             	title: "Public",
@@ -72,11 +71,11 @@ $(document).ready(function(e){
         	},
             {
             	title: "Private",
-            	theme: "orange",
+            	theme: "green",
             	id: "privateMsg",
             	type: "json_string",
             	options: {
-                	url: jsonURL    // Must be a local URL
+                	url: "check?sender=" + userkey   // Must be a local URL
             	}
         	}
         ];
@@ -113,10 +112,32 @@ $(document).ready(function(e){
 	
 	//$("#timelinecontainer").set
 	$('div#timelinecontainer').addClass('minimize');
-	initializeMap();
+	//initializeMap();
 });
 
 function submitMsg(e){
+	var dat = {	
+				"start" : $('input#from').val(),
+                "point" : {
+                    "lat" : eventLocation.lat(),
+                    "lon" : eventLocation.lng() 
+                    },
+                "title" : $('input#title').val(),
+                "options" : {
+                   	"description": $('textarea#message').val() 
+                   	}
+               };
+	
+	if($('input#from').val() != $('input#to').val())
+		dat["end"] = $('input#to').val();
+	
+	if($('input:radio[name=type]:checked').val() == "0")
+		tm.datasets['publicMsg'].loadItem(dat);
+	else 
+		tm.datasets['privateMsg'].loadItem(dat);
+	
+	tm.refreshTimeline();
+	
 	$.ajax({
 	   type: "POST",
 	   url: "post",
@@ -137,7 +158,8 @@ function submitMsg(e){
 	   }
 	});
 	$( "#new-marker-form" ).dialog('close');
-	placeMarker(eventLocation, $('textarea#message').val());
+	
+	//placeMarker(eventLocation, $('textarea#message').val());
 }
 function loadMessage(){
 	$.ajax({
