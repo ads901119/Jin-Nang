@@ -159,7 +159,7 @@ Mapstraction: {
 	setCenterAndZoom: function(point, zoom) { 
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		map.setCenter(pt);
+		//map.setCenter(pt);  **JinNang**
 		map.setZoom(zoom);
 	},
 	

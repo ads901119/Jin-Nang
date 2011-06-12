@@ -41,7 +41,46 @@ $(document).ready(function(e){
 		});
 	
 	// timemap
-	var jsonURL = "check?sender=" + uname;
+	var theme = Timeline.ClassicTheme.create();
+    theme.event.track.gap = 0;
+    //theme.event.tape.height = 16;
+    
+    if(userkey == "-1") {
+    	var dataset = [
+        	{
+            	title: "Public",
+            	theme: "blue",
+            	id: "publicMsg",
+            	type: "json_string",
+            	options: {
+                	url: "check"    // Must be a local URL
+            	}
+        	}];
+    	
+    }
+    else {
+    	var jsonURL = "check?sender=" + userkey;
+    	var dataset = [
+        	{
+            	title: "Public",
+            	theme: "blue",
+            	id: "publicMsg",
+            	type: "json_string",
+            	options: {
+                	url: "check"    // Must be a local URL
+            	}
+        	},
+            {
+            	title: "Private",
+            	theme: "orange",
+            	id: "privateMsg",
+            	type: "json_string",
+            	options: {
+                	url: jsonURL    // Must be a local URL
+            	}
+        	}
+        ];
+    }
 
 	tm = TimeMap.init({
         mapId: "map_canvas",               // Id of map div element (required)
@@ -52,27 +91,18 @@ $(document).ready(function(e){
             showMapCtrl: false,
             mapType: "normal"
         },
-        datasets: [
-            {
-            	title: "JSON String Dataset",
-            	theme: "orange",
-            	id: "mydata",
-            	type: "json_string",
-            	options: {
-                	url: jsonURL    // Must be a local URL
-            	}
-        	}
-        ],
+        datasets: dataset,
         bandInfo: [ 
             { 
                width:          "70%", 
                intervalUnit:   Timeline.DateTime.WEEK, 
-		       intervalPixels: 80,
+		       intervalPixels: 100,
+		       theme: theme
             }, 
             { 
                width:          "30%", 
                intervalUnit:   Timeline.DateTime.MONTH, 
-		       intervalPixels: 330, 
+		       intervalPixels: 200, 
                overview:       true
             } 
        ]
@@ -86,16 +116,12 @@ $(document).ready(function(e){
 	initializeMap();
 });
 
-/*
-*  Javascript functions
-*/
-
 function submitMsg(e){
 	$.ajax({
 	   type: "POST",
 	   url: "post",
 	   data: { 
-		   sender: uname,
+		   sender: userkey,
 		   title: $('input#title').val(),
 		   message: $('textarea#message').val(),
 		   location: eventLocation.lat() + ',' + eventLocation.lng(),
@@ -108,8 +134,6 @@ function submitMsg(e){
 		 alert( "Data Saved!!");
 		 $('input#title').val("");
 		 $('textarea#message').val("");
-		 $('input#from').val("");
-		 $('input#to').val("");
 	   }
 	});
 	$( "#new-marker-form" ).dialog('close');
@@ -132,6 +156,14 @@ function unidec(str) {
 function showDialog(e){
 	$("#rightMenu").fadeOut();
 	$( "#new-marker-form" ).dialog('open');
+}
+// toggle the visibility of a dataset
+function toggleDataset(dsid, toggle) {
+    if (toggle) {
+        tm.datasets[dsid].show();
+    } else {
+        tm.datasets[dsid].hide();
+    }
 }
 
 var showTimeline = false;

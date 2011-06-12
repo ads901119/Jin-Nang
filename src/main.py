@@ -24,16 +24,31 @@ class Messagelog(db.Model):
     
     #Post time
     posttime = db.DateTimeProperty(auto_now_add=True)
+
+class PublicMessage(db.Model):
+    sender = db.StringProperty()   # sender = shawnwun@gmail.com
+    title = db.StringProperty()     # title = Good day
+    message= db.TextProperty()      # message = today is really my day
+    location = db.GeoPtProperty()    # location = 23.3,123.22
+    
+    #Time filter
+    beginTime = db.DateTimeProperty()    # 2011-05-19-14-46-12
+    endTime = db.DateTimeProperty()    # 2011-05-20-17-00-00
+    
+    #Post time
+    posttime = db.DateTimeProperty(auto_now_add=True)
     
 class MainPage(webapp.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
             output = template.render('html/main.html', {'username': user.nickname(),
+                                                        'userkey': user.user_id(),
                                                         'logIOurl': users.create_logout_url('/')})
         else:
             output = template.render('html/main.html', {'username': 'guest',
-                                                        'logIOurl' :  users.create_login_url('/')})
+                                                        'userkey': '-1',
+                                                        'logIOurl':  users.create_login_url('/')})
         self.response.out.write(output)
 
 class Post(webapp.RequestHandler):
@@ -47,7 +62,6 @@ class Post(webapp.RequestHandler):
         mylocation = db.GeoPt(float(locateX),float(locateY))
         
         mytype = self.request.get('type')
-        myreceiver = self.request.get('receiver')
          
         #begin = datetime.datetime.strptime(str(self.request.get('start')),'%Y-%m-%d-%H-%M-%S')
         #end = datetime.datetime.strptime(str(self.request.get('end')),'%Y-%m-%d-%H-%M-%S')
@@ -55,10 +69,27 @@ class Post(webapp.RequestHandler):
         begin = datetime.datetime.strptime(str(self.request.get('start')),'%Y-%m-%d')
         end = datetime.datetime.strptime(str(self.request.get('end')),'%Y-%m-%d')
         
-        messagelog = Messagelog(sender=str(myname),title=str(mytitle),message=str(mymessage),\
-                                location=mylocation,type=str(mytype),receiver=str(myreceiver),\
-                                beginTime=begin,endTime=end)
-        messagelog.put()
+        if mytype == "0":
+            msg = PublicMessage(sender=str(myname),
+                                title=str(mytitle),
+                                message=str(mymessage),
+                                location=mylocation,
+                                beginTime=begin,
+                                endTime=end)
+            msg.put()
+        else:
+            myreceiver = self.request.get('receiver')
+            
+            msg = Messagelog(sender=str(myname),
+                             title=str(mytitle),
+                             message=str(mymessage),
+                             location=mylocation,
+                             type=str(mytype),
+                             receiver=str(myreceiver),
+                             beginTime=begin,
+                             endTime=end)
+            msg.put()
+            
         self.response.out.write("TRUE")
         
 
@@ -97,28 +128,33 @@ class Ask(webapp.RequestHandler):
 class Check(webapp.RequestHandler):
     def get(self):
         sender = str(self.request.get('sender'))
-
-        ret = db.GqlQuery("SELECT * FROM Messagelog WHERE sender =:1 "
-                              "ORDER BY posttime DESC", sender)
         allist = []
+        
+        if sender:
+            ret = db.GqlQuery("SELECT * FROM Messagelog WHERE sender =:1 "
+                                  "ORDER BY posttime DESC", sender)
+        else:
+            ret = db.GqlQuery("SELECT * FROM PublicMessage ORDER BY posttime DESC")
+            
         for e in ret:
             jlist = {}
             jlist['title'] = str(e.title).decode('unicode-escape')
-            jlist['Receiver'] = str(e.receiver)
-            
+            if sender:
+                jlist['Receiver'] = str(e.receiver)
+                
             loc = {}
             loc['lat'] = str(e.location.lat)
             loc['lon'] = str(e.location.lon)
             jlist['point'] = loc
-            
+                
             jlist['start'] = str(e.beginTime)
             if(e.beginTime != e.endTime):
                 jlist['end'] = str(e.endTime)
-            
+                
             options = {}
             options['description'] = str(e.message).decode('unicode-escape')
             jlist['options'] = options
-            
+                
             allist.append(jlist)
                 
         self.response.out.write(json.dumps(allist))

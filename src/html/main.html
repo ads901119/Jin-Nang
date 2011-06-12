@@ -13,11 +13,13 @@
 <script type="text/javascript" src="js/timemap/lib/timeline-2.3.0.js"></script>
 <script type="text/javascript" src="js/timemap/src/timemap.js"></script>
 <script type="text/javascript" src="js/timemap/src/loaders/json.js"></script> 
+<script type="text/javascript" src="js/timemap/src/manipulation.js"></script> 
 <script type="text/javascript" src="js/map.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 <script type="text/javascript">
 	//Global vars
 	var uname = "{{username}}";
+	var userkey = "{{userkey}}";
 	
 </script>
 </head>
@@ -25,12 +27,11 @@
 <body>
 <div class="siteContainer">
 	<div class="header">
-		<img src="images/logo.png" alt="Jin Nang logo" style="margin-left: 10px;"/>
-		
+		<img src="images/logo.png" alt="Jin Nang logo" style="margin-left: 10px;"/>	
 	</div>
 	<div class="toolbar">
 		<div id="prompt" class="toolbarBtn"> 歡迎回來, <span id="username">{{username}}</span> !! </div>
-		{% if username == "guest" %}
+		{% if userkey == "-1" %}
 		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn">登入</a>
 		{% else %}
 		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn">登出</a>
@@ -38,13 +39,14 @@
 		
 		<div class="typeBtns toolbarBtn">
         	<div id="format" style="display:inline-block">
-            	<input type="checkbox" id="check1" /><label for="check1">公共</label>
-               	{% if username == "guest" %}
+               	{% if userkey == "-1" %}
+               	<input type="checkbox" id="check1" disabled="disabled" checked/><label for="check1">公共</label>
                 <input type="checkbox" id="check2" disabled="disabled" /><label for="check2">好友</label>
                 <input type="checkbox" id="check3" disabled="disabled" /><label for="check3">我的</label>
                 {% else %}
+                <input type="checkbox" id="check1" onclick="toggleDataset('publicMsg', this.checked);" checked/><label for="check1">公共</label>
                 <input type="checkbox" id="check2" /><label for="check2">好友</label>
-                <input type="checkbox" id="check3" /><label for="check3">我的</label>       
+                <input type="checkbox" id="check3" onclick="toggleDataset('privateMsg', this.checked);" checked/><label for="check3">我的</label>       
                 {% endif %}
             </div>
             <div style="display:inline-block">
@@ -121,7 +123,7 @@
     </div>
     
     <div id="rightMenu" class="rightMenu">
-    	{% if username == "guest" %}
+    	{% if userkey == "-1" %}
     	<a href="{{logIOurl}}" id="logBtn2">登入</a>之後，就可留下訊息
     	{% else %}
         <button id="new" class="menuBtn">留下訊息</button> <br/>
