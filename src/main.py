@@ -18,11 +18,10 @@ class Messagelog(db.Model):
     type = db.StringProperty()      # type = private
     receiver = db.StringProperty()    # receiver = lai61616@gmail.com
     
-    #Time filter
+
     beginTime = db.DateTimeProperty()    # 2011-05-19-14-46-12
     endTime = db.DateTimeProperty()    # 2011-05-20-17-00-00
     
-    #Post time
     posttime = db.DateTimeProperty(auto_now_add=True)
 
 class PublicMessage(db.Model):
@@ -68,7 +67,7 @@ class Post(webapp.RequestHandler):
         
         begin = datetime.datetime.strptime(str(self.request.get('start')),'%Y-%m-%d')
         end = datetime.datetime.strptime(str(self.request.get('end')),'%Y-%m-%d')
-        
+            
         if mytype == "0":
             msg = PublicMessage(sender=str(myname),
                                 title=str(mytitle),
@@ -128,6 +127,7 @@ class Ask(webapp.RequestHandler):
 class Check(webapp.RequestHandler):
     def get(self):
         sender = str(self.request.get('sender'))
+        user = users.get_current_user()
         allist = []
         
         if sender:
@@ -138,21 +138,36 @@ class Check(webapp.RequestHandler):
             
         for e in ret:
             jlist = {}
-            jlist['title'] = str(e.title).decode('unicode-escape')
+            title = str(e.title).decode('unicode-escape')
+            dur = e.beginTime.strftime('%m/%d')
+            
+            jlist['start'] = str(e.beginTime) 
+            if (e.beginTime != e.endTime):
+                dur += " - " + e.endTime.strftime('%m/%d')
+                jlist['end'] = str(e.endTime)
+                
+            jlist['title'] = title + " (" + dur + ")"
             if sender:
                 jlist['Receiver'] = str(e.receiver)
                 
             loc = {}
             loc['lat'] = str(e.location.lat)
             loc['lon'] = str(e.location.lon)
-            jlist['point'] = loc
-                
-            jlist['start'] = str(e.beginTime)
-            if(e.beginTime != e.endTime):
-                jlist['end'] = str(e.endTime)
-                
+            jlist['point'] = loc               
+            
+            if user:
+                canDelete = (sender == user.user_id()) 
+            else:
+                canDelete = user
+            output = template.render('html/infoTemplate.html', {'title': title,
+                                                                'content': str(e.message).decode('unicode-escape'),
+                                                                'startD': str(e.beginTime.date()),
+                                                                'endD': str(e.endTime.date()),
+                                                                'delete': canDelete
+                                                                })
             options = {}
-            options['description'] = str(e.message).decode('unicode-escape')
+            #options['description'] = str(e.message).decode('unicode-escape')
+            options['infoHtml'] = output
             jlist['options'] = options
                 
             allist.append(jlist)

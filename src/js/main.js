@@ -1,5 +1,8 @@
-// JavaScript Document
+// timemap
 var tm;
+
+// new message form
+var title, content, start, end, allFields, tips;
 
 $(document).ready(function(e){
 	// Tabs
@@ -8,13 +11,16 @@ $(document).ready(function(e){
 	//button set
 	$("#format").buttonset();
 	$("div#radio").buttonset();
-	$("#moreToggle").button();
+	$("#moreToggle").button({icons: {primary: "ui-icon-transferthick-e-w"}});
 	$('#moreToggle').click(toggleFilters);
+	$('#about').button({icons: {primary: "ui-icon-info"}});
+	$('#config').button({icons: {primary: "ui-icon-gear"}});
 	$('#logBtn').button();
 	$('#logBtn2').button();
 	
+	// New message form
 	$( "#new-marker-form" ).dialog({
-			height: 500,
+			height: 530,
 			width: 300,
 			resizable: false,
 			modal: true,
@@ -22,23 +28,30 @@ $(document).ready(function(e){
 			buttons: {"建立": submitMsg,
 					 Cancel: function() { $( this ).dialog( "close" );}}
 	});	
+	title = $( "#title" );
+	content = $( "#message" );
+	start = $( "#from" );
+	end = $( "#to");
+	allFields = $( [] ).add( title ).add( content ).add( start ).add( end );
+	tips = $( ".validateTips" );	
 	
-	$( "#new" ).button().click(showDialog);
-	$( "#other" ).button();
+	// Right click menu
+	$( "#new" ).button({icons: {primary: "ui-icon-tag"}}).click(showDialog);
+	$( "#other" ).button({icons: {primary: "ui-icon-star"}});
 	
 	var dates = $( "#from, #to" ).datepicker({
-			showButtonPanel: true,
-			dateFormat: "yy-mm-dd",
-			onSelect: function( selectedDate ) {
-				var option = this.id == "from" ? "minDate" : "maxDate",
-					instance = $( this ).data( "datepicker" ),
-					date = $.datepicker.parseDate(
-						instance.settings.dateFormat ||
-						$.datepicker._defaults.dateFormat,
-						selectedDate, instance.settings );
-				dates.not( this ).datepicker( "option", option, date );
-			}
-		});
+		showButtonPanel: true,
+		dateFormat: "yy-mm-dd",
+		onSelect: function( selectedDate ) {
+			var option = this.id == "from" ? "minDate" : "maxDate",
+				instance = $( this ).data( "datepicker" ),
+				date = $.datepicker.parseDate(
+					instance.settings.dateFormat ||
+					$.datepicker._defaults.dateFormat,
+					selectedDate, instance.settings );
+			dates.not( this ).datepicker( "option", option, date );
+		}
+	});
 	
 	// timemap
 	var theme = Timeline.ClassicTheme.create();
@@ -53,10 +66,9 @@ $(document).ready(function(e){
             	id: "publicMsg",
             	type: "json_string",
             	options: {
-                	url: "check"    // Must be a local URL
+                	url: "check"
             	}
         	}];
-    	
     }
     else {
     	var dataset = [
@@ -66,40 +78,46 @@ $(document).ready(function(e){
             	id: "publicMsg",
             	type: "json_string",
             	options: {
-                	url: "check"    // Must be a local URL
+                	url: "check"
             	}
         	},
             {
             	title: "Private",
-            	theme: "green",
+            	theme: "red",
             	id: "privateMsg",
             	type: "json_string",
             	options: {
-                	url: "check?sender=" + userkey   // Must be a local URL
+                	url: "check?sender=" + userkey
             	}
         	}
         ];
     }
-
+	
+	today = new String;
+	d = new Date();
+	today = today.concat(d.getFullYear(), "-", d.getMonth()+1,"-", d.getDate());
+	//alert(today);
+	
 	tm = TimeMap.init({
         mapId: "map_canvas",               // Id of map div element (required)
         timelineId: "timeline",     // Id of timeline div element (required)
+        scrollTo: today,
         options: {
             eventIconPath: "images/timemap/",
             showMapTypeCtrl: false,
-            showMapCtrl: false,
+            showMapCtrl: true,
             mapType: "normal"
         },
         datasets: dataset,
         bandInfo: [ 
             { 
-               width:          "70%", 
+               width:          "85%", 
                intervalUnit:   Timeline.DateTime.WEEK, 
 		       intervalPixels: 100,
 		       theme: theme
             }, 
             { 
-               width:          "30%", 
+               width:          "15%", 
                intervalUnit:   Timeline.DateTime.MONTH, 
 		       intervalPixels: 200, 
                overview:       true
@@ -109,57 +127,82 @@ $(document).ready(function(e){
     map = tm.getNativeMap();
     google.maps.event.addListener(map, "rightclick", showMenu);
 	google.maps.event.addListener(map, "click", singleClick);
-	
-	//$("#timelinecontainer").set
+
 	$('div#timelinecontainer').addClass('minimize');
 	//initializeMap();
 });
 
 function submitMsg(e){
-	var dat = {	
-				"start" : $('input#from').val(),
-                "point" : {
-                    "lat" : eventLocation.lat(),
-                    "lon" : eventLocation.lng() 
-                    },
-                "title" : $('input#title').val(),
-                "options" : {
-                   	"description": $('textarea#message').val() 
-                   	}
-               };
-	
-	if($('input#from').val() != $('input#to').val())
-		dat["end"] = $('input#to').val();
-	
-	if($('input:radio[name=type]:checked').val() == "0")
-		tm.datasets['publicMsg'].loadItem(dat);
-	else 
-		tm.datasets['privateMsg'].loadItem(dat);
-	
-	tm.refreshTimeline();
-	
-	$.ajax({
-	   type: "POST",
-	   url: "post",
-	   data: { 
-		   sender: userkey,
-		   title: $('input#title').val(),
-		   message: $('textarea#message').val(),
-		   location: eventLocation.lat() + ',' + eventLocation.lng(),
-		   type: $('input:radio[name=type]:checked').val(),
-		   receiver: 'Shawn',
-		   start: $('input#from').val(),
-		   end: $('input#to').val()
-		   },
-	   success: function(msg){
-		 alert( "Data Saved!!");
-		 $('input#title').val("");
-		 $('textarea#message').val("");
-	   }
-	});
-	$( "#new-marker-form" ).dialog('close');
-	
-	//placeMarker(eventLocation, $('textarea#message').val());
+	if(isValid()){
+		var dat = {	
+					"start" : $('input#from').val(),
+	                "point" : {
+	                    "lat" : eventLocation.lat(),
+	                    "lon" : eventLocation.lng() 
+	                    },
+	                "title" : $('input#title').val(),
+	                "options" : {
+	                   	"description": $('textarea#message').val() 
+	                   	}
+	               };
+		
+		if(start.val() != end.val())
+			dat["end"] = end.val();
+		
+		if($('input:radio[name=type]:checked').val() == "0")
+			tm.datasets['publicMsg'].loadItem(dat);
+		else 
+			tm.datasets['privateMsg'].loadItem(dat);
+		
+		tm.refreshTimeline();
+		
+		$.ajax({
+		   type: "POST",
+		   url: "post",
+		   data: { 
+			   sender: userkey,
+			   title: title.val(),
+			   message: content.val(),
+			   location: eventLocation.lat() + ',' + eventLocation.lng(),
+			   type: $('input:radio[name=type]:checked').val(),
+			   receiver: 'Shawn',
+			   start: start.val(),
+			   end: (end.val() ? end.val() : start.val())
+			   },
+		   success: function(msg){
+			 //alert( "Data Saved!!");
+			 title.val("");
+			 content.val("");
+		   }
+		});
+		$( "#new-marker-form" ).dialog('close');
+	}
+}
+function updateTips( t ) {
+	tips.text( t ).fadeIn();
+	setTimeout(function() {
+		tips.fadeOut();
+		allFields.removeClass( "ui-state-error" );
+		}, 5000 );
+}
+function checkNotNull(i, n) {
+	if ( i.val() ) {
+		return true;
+	} else {	
+		i.addClass( "ui-state-error" );
+		updateTips( "請輸入" + n + "...");
+		return false;
+	}
+}
+function isValid(){
+	var bValid = true;
+	allFields.removeClass( "ui-state-error" );
+
+	bValid = bValid && checkNotNull( title, "標題");
+	bValid = bValid && checkNotNull( content, "訊息");
+	bValid = bValid && checkNotNull( start, "開始時間" );
+
+	return bValid;
 }
 function loadMessage(){
 	$.ajax({
@@ -179,6 +222,9 @@ function showDialog(e){
 	$("#rightMenu").fadeOut();
 	$( "#new-marker-form" ).dialog('open');
 }
+function notyet(){
+	alert("抱歉，這個功能目前尚未完成！");
+}
 // toggle the visibility of a dataset
 function toggleDataset(dsid, toggle) {
     if (toggle) {
@@ -188,6 +234,7 @@ function toggleDataset(dsid, toggle) {
     }
 }
 
+// Timeline toggle
 var showTimeline = false;
 function toggleFilters(e){
 	if(showTimeline) {
@@ -195,13 +242,20 @@ function toggleFilters(e){
 		$('.header').slideDown("", function(){
 			$('div#timelinecontainer').addClass('minimize');
 		});
+		$("div#map").animate({
+		    top: "120px"
+		  });
 		showTimeline = false;
 	}
 	else {
 		$('div#timelinecontainer').removeClass('minimize');
 		$('.header').slideUp( "", function (){
 			$('#timeline').removeClass('hideBack');
+			tm.refreshTimeline();
 		});
+		$("div#map").animate({
+		    top: "280px"
+		  });
 		showTimeline = true;
 	}
 }

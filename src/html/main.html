@@ -27,99 +27,73 @@
 <body>
 <div class="siteContainer">
 	<div class="header">
-		<img src="images/logo.png" alt="Jin Nang logo" style="margin-left: 10px;"/>	
+		<img src="images/logo.png" alt="Jin Nang logo" id="logo"/>	
 	</div>
 	<div class="toolbar">
-		<div id="prompt" class="toolbarBtn"> 歡迎回來, <span id="username">{{username}}</span> !! </div>
-		{% if userkey == "-1" %}
-		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn">登入</a>
-		{% else %}
-		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn">登出</a>
-		{% endif %}
+		<div id="prompt" class="toolbarBtn"> 你好, <span id="username">{{username}}</span> !! </div>
 		
-		<div class="typeBtns toolbarBtn">
-        	<div id="format" style="display:inline-block">
+		
+		<div class="typeBtns" id="filters" style="display: inline-block;">
+        	<div id="format" class="toolbarBtn">
                	{% if userkey == "-1" %}
-               	<input type="checkbox" id="check1" disabled="disabled" checked/><label for="check1">公共</label>
-                <input type="checkbox" id="check2" disabled="disabled" /><label for="check2">好友</label>
-                <input type="checkbox" id="check3" disabled="disabled" /><label for="check3">我的</label>
+               	<input type="checkbox" id="check1" disabled="disabled" checked/>
+               	<label for="check1"><div class="block blueB"></div>公共</label>
+                <input type="checkbox" id="check2" disabled="disabled" />
+                <label for="check2"><div class="block greenB"></div>好友</label>
+                <input type="checkbox" id="check3" disabled="disabled" />
+                <label for="check3"><div class="block redB"></div>我的</label>
                 {% else %}
-                <input type="checkbox" id="check1" onclick="toggleDataset('publicMsg', this.checked);" checked/><label for="check1">公共</label>
-                <input type="checkbox" id="check2" /><label for="check2">好友</label>
-                <input type="checkbox" id="check3" onclick="toggleDataset('privateMsg', this.checked);" checked/><label for="check3">我的</label>       
+                <input type="checkbox" id="check1" onclick="toggleDataset('publicMsg', this.checked);" checked/>
+                <label for="check1"><div class="block blueB"></div>公共</label>
+                <input type="checkbox" id="check2" />
+                <label for="check2"><div class="block greenB"></div>好友</label>
+                <input type="checkbox" id="check3" onclick="toggleDataset('privateMsg', this.checked);" checked/>
+                <label for="check3"><div class="block redB"></div>我的</label>       
                 {% endif %}
             </div>
-            <div style="display:inline-block">
-              	<input type="checkbox" id="moreToggle" /><label for="moreToggle">時間軸</label>
-           	</div>
+            <div class="toolbarBtn">
+        		<input type="checkbox" id="moreToggle" /><label for="moreToggle">時間軸</label>
+        	</div>
         </div>
+        
+        
+        {% if userkey == "-1" %}
+		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn utilBtn">登入</a>
+		{% else %}
+		<a href="{{logIOurl}}" id="logBtn" class="toolbarBtn utilBtn">登出</a>
+		{% endif %}
+		<button id="about" class="toolbarBtn utilBtn">關於</button>
+        <button id="config" class="toolbarBtn utilBtn" onclick="notyet()">設定</button>
 	</div>
 
 	<div id="timelinecontainer"> 
 	    <div id="timeline" class="hideBack"></div> 
 	</div> 
-	<div class="map">
+	<div class="map" id="map">
 		<div id="map_canvas" style="width: 100%; height: 100%;"></div> 
 	</div>
-	<!--
-    <div id="tabs" class="tabs">
-		<ul>
-			{% if username == "guest" %}
-			<li><a href="#tabs-1">察看錦囊</a></li>
-			{% else %}
-			<li><a href="#tabs-1">察看錦囊</a></li>
-			<li><a href="#tabs-2">好友管理</a></li>
-			<li><a href="#tabs-3">帳號管理</a></li>
-			{% endif %}
-        </ul>
-		<div id="tabs-1">
-			
-            
-            <div class="advFilters" style="display:none">
-                <div class="timeFilter">
-                        <label for="amount">Time Range:</label>
-                        <input type="text" id="amount" style="width:200px; border:0; color:#f6931d;" />
-                    <div id="slider-range"></div>
-                </div>
-            </div>
-    	</div>
-    	{% if username == "guest" %}
-		<div id="tabs-2">
-			
-		</div>
-        {% else %}
-        <div id="tabs-2">
-    		不能同年同月同日生，但願同年同月同日死！
-            <p>
-            <img src="images/san.jpg" alt="san" />
-            </p>
-    	</div>
-		<div id="tabs-3">
-    		要管理啥好？
-        </div>
-        {% endif %}
-	</div>
--->
+	
 <!-- Widgets start -->
-    <div id="new-marker-form" title="New Message">
+    <div id="new-marker-form" title="新增訊息">
         <form>
         <fieldset>
             <label for="title">標題</label>
-            <input type="text" name="title" id="title" class="text ui-widget-content ui-corner-all" />
+            <input type="text" name="title" id="title" class="text ui-widget-content ui-corner-all" value=""/>
             <label for="message">訊息</label>
-  			<textarea name="message" id="message" cols="30" rows="5" class="text ui-widget-content ui-corner-all" style="resize: none;"></textarea>
+  			<textarea name="message" id="message" cols="30" rows="5" class="text ui-widget-content ui-corner-all" style="resize: none;" value=""></textarea>
             <div id="radio">
             	屬性
                 <input type="radio" id="radio1" name="type" value="0" /><label for="radio1">公共</label>
                 <input type="radio" id="radio2" name="type" value="1" /><label for="radio2">好友</label>
                 <input type="radio" id="radio3" name="type" checked="checked" value="2" /><label for="radio3">我的</label>
             </div>
-            <label for="from">From</label>
-			<input type="text" id="from" name="start" class="text ui-widget-content ui-corner-all" />
-			<label for="to">To</label>
-			<input type="text" id="to" name="end" class="text ui-widget-content ui-corner-all" />
+            <label for="from">開始時間</label>
+			<input type="text" id="from" name="start" class="text ui-widget-content ui-corner-all" value=""/>
+			<label for="to">結束時間</label>
+			<input type="text" id="to" name="end" class="text ui-widget-content ui-corner-all" value=""/>
         </fieldset>
         </form>
+        <p class="validateTips ui-state-highlight" style="display: none;"></p>
     </div>
     
     <div id="rightMenu" class="rightMenu">
