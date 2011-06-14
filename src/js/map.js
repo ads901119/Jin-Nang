@@ -1,5 +1,4 @@
 //Google map start
-var map;
 var markers = [];
 var infowindow = new google.maps.InfoWindow();
 var eventLocation;
@@ -18,14 +17,6 @@ function getMouseCoordinates(event)
 }
 
 function initializeMap() {
-	/*
-	var myOptions = {
-		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		disableDefaultUI: true,
-		};
-	
-	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-	*/
 	var browserSupportFlag = false;
 	if(navigator.geolocation) {
     	browserSupportFlag = true;
@@ -59,13 +50,14 @@ function placeMe (pos) {
 	var marker = new google.maps.Marker({
 		position: pos,
 		map: map,
-		title:"Me",
-		content:"I am here!!"
+		title:"現在位置"
 		});
+	/*
 	google.maps.event.addListener(marker, 'click', function() {
 		infowindow.setContent(marker.content);
     	infowindow.open(map,marker);
   	});
+  	*/
 	markers.push(marker);
 }
 function loadMarker(msg) {

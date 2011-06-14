@@ -10,7 +10,6 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext import db
 
 class Messagelog(db.Model):
-    
     sender = db.StringProperty()   # sender = shawnwun@gmail.com
     title = db.StringProperty()     # title = Good day
     message= db.TextProperty()      # message = today is really my day
@@ -30,11 +29,9 @@ class PublicMessage(db.Model):
     message= db.TextProperty()      # message = today is really my day
     location = db.GeoPtProperty()    # location = 23.3,123.22
     
-    #Time filter
     beginTime = db.DateTimeProperty()    # 2011-05-19-14-46-12
     endTime = db.DateTimeProperty()    # 2011-05-20-17-00-00
     
-    #Post time
     posttime = db.DateTimeProperty(auto_now_add=True)
     
 class MainPage(webapp.RequestHandler):
@@ -122,19 +119,57 @@ class Ask(webapp.RequestHandler):
                 allist.append(jlist)
                 
         self.response.out.write(json.dumps(allist))
-     
-                
-class Check(webapp.RequestHandler):
+        
+class Public(webapp.RequestHandler):
     def get(self):
-        sender = str(self.request.get('sender'))
         user = users.get_current_user()
         allist = []
         
-        if sender:
-            ret = db.GqlQuery("SELECT * FROM Messagelog WHERE sender =:1 "
-                                  "ORDER BY posttime DESC", sender)
-        else:
-            ret = db.GqlQuery("SELECT * FROM PublicMessage ORDER BY posttime DESC")
+        ret = db.GqlQuery("SELECT * FROM PublicMessage ORDER BY posttime DESC")
+        
+        for e in ret:
+            jlist = {}
+            title = str(e.title).decode('unicode-escape')
+            dur = e.beginTime.strftime('%m/%d')
+            
+            jlist['start'] = str(e.beginTime) 
+            if (e.beginTime != e.endTime):
+                dur += " - " + e.endTime.strftime('%m/%d')
+                jlist['end'] = str(e.endTime)
+                
+            jlist['title'] = title + " (" + dur + ")"
+                
+            loc = {}
+            loc['lat'] = str(e.location.lat)
+            loc['lon'] = str(e.location.lon)
+            jlist['point'] = loc               
+            
+            if user:
+                canDelete = (e.sender == user.user_id()) 
+            else:
+                canDelete = False
+                
+            output = template.render('html/infoTemplate.html', {'title': title,
+                                                                'content': str(e.message).decode('unicode-escape'),
+                                                                'startD': str(e.beginTime.date()),
+                                                                'endD': str(e.endTime.date()),
+                                                                'delete': canDelete
+                                                                })
+            options = {}
+            options['infoHtml'] = output
+            jlist['options'] = options
+                
+            allist.append(jlist)
+                
+        self.response.out.write(json.dumps(allist))
+                
+class Check(webapp.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        allist = []
+        
+        ret = db.GqlQuery("SELECT * FROM Messagelog WHERE sender =:1 "
+                          "ORDER BY posttime DESC", user.user_id())
             
         for e in ret:
             jlist = {}
@@ -147,18 +182,15 @@ class Check(webapp.RequestHandler):
                 jlist['end'] = str(e.endTime)
                 
             jlist['title'] = title + " (" + dur + ")"
-            if sender:
-                jlist['Receiver'] = str(e.receiver)
+            jlist['Receiver'] = str(e.receiver)
                 
             loc = {}
             loc['lat'] = str(e.location.lat)
             loc['lon'] = str(e.location.lon)
             jlist['point'] = loc               
             
-            if user:
-                canDelete = (sender == user.user_id()) 
-            else:
-                canDelete = user
+            canDelete = (e.sender == user.user_id()) 
+                
             output = template.render('html/infoTemplate.html', {'title': title,
                                                                 'content': str(e.message).decode('unicode-escape'),
                                                                 'startD': str(e.beginTime.date()),
@@ -166,7 +198,6 @@ class Check(webapp.RequestHandler):
                                                                 'delete': canDelete
                                                                 })
             options = {}
-            #options['description'] = str(e.message).decode('unicode-escape')
             options['infoHtml'] = output
             jlist['options'] = options
                 
@@ -216,6 +247,7 @@ application = webapp.WSGIApplication(
                                      [('/', MainPage),
                                       ('/post', Post),
                                       ('/ask', Ask),
+                                      ('/public', Public),
                                       ('/check', Check),
                                       ('/remove', Remove),
                                       ('/retrieve', Retrieve)],

@@ -1,5 +1,6 @@
 // timemap
 var tm;
+var map;
 
 // new message form
 var title, content, start, end, allFields, tips;
@@ -17,6 +18,9 @@ $(document).ready(function(e){
 	$('#config').button({icons: {primary: "ui-icon-gear"}});
 	$('#logBtn').button();
 	$('#logBtn2').button();
+	
+	// color box set up
+	$("#about").colorbox({width:"650", inline:true, href:"#aboutBox"});
 	
 	// New message form
 	$( "#new-marker-form" ).dialog({
@@ -66,7 +70,7 @@ $(document).ready(function(e){
             	id: "publicMsg",
             	type: "json_string",
             	options: {
-                	url: "check"
+                	url: "public"
             	}
         	}];
     }
@@ -78,7 +82,7 @@ $(document).ready(function(e){
             	id: "publicMsg",
             	type: "json_string",
             	options: {
-                	url: "check"
+                	url: "public"
             	}
         	},
             {
@@ -87,7 +91,7 @@ $(document).ready(function(e){
             	id: "privateMsg",
             	type: "json_string",
             	options: {
-                	url: "check?sender=" + userkey
+                	url: "check"
             	}
         	}
         ];
@@ -129,7 +133,7 @@ $(document).ready(function(e){
 	google.maps.event.addListener(map, "click", singleClick);
 
 	$('div#timelinecontainer').addClass('minimize');
-	//initializeMap();
+	initializeMap();
 });
 
 function submitMsg(e){

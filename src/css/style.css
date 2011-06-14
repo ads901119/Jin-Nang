@@ -101,6 +101,9 @@ fieldset {
 .infoBtn {
 	float: right;
 }
+.aboutBox {
+	height: 310px;
+}
 #logo {
 	float: right;
 	margin: 5px 10px;
