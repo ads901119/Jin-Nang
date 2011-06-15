@@ -9,6 +9,9 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext import db
 
+FB_APPID = '116735828415506'
+FB_APPSECRET = 'a06843f40ad5c9349667c8250a032d70'
+
 class Messagelog(db.Model):
     sender = db.StringProperty()   # sender = shawnwun@gmail.com
     title = db.StringProperty()     # title = Good day
