@@ -1,0 +1,10 @@
+<h3 class="infoTitle">{{title}}</h3>
+<p class="infoContent">{{content}}</p>
+<p class="infoDate">
+開始：{{startD}}<br />
+結束：{{endD}}<br />
+</p>
+{% if delete %}
+<input name="" type="button" id="deleteBtn" value="刪除" class="infoBtn" onclick="notyet()"/>
+{% endif %}
+<input name="" type="button" id="moreBtn" value="詳細" class="infoBtn" onclick="notyet()"/>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Login</title>
+    <!-- Simple OpenID Selector -->
+    <link type="text/css" rel="stylesheet" href="css/openid.css" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/openid-jquery.js"></script>
+    <script type="text/javascript" src="js/openid-en.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            openid.init('openid_identifier', 'claimid');
+            openid.setDemoMode(false); //Stops form submission for client javascript-only test purposes
+        });
+    </script>
+    <!-- /Simple OpenID Selector -->
+    <style type="text/css">
+        /* Basic page formatting */
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Login</h2>
+    <p>Choose an account to login</p>
+    <br/>
+    
+    <div id="fb-root"></div>
+    <div id="fb-auth"></div>
+    <script type="text/javascript">
+      window.fbAsyncInit = function() {
+        FB.init({appId: '116735828415506',
+                 status: true,
+                 cookie: true,
+                 xfbml: true
+        });
+        /*
+        FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
+            window.location = "/"; //.reload();
+        });
+        */
+        function updateButton(response) {
+	        //alert('Updating Button '+ response);
+	        var fb_auth = document.getElementById('fb-auth');
+	    
+	        if (response.session) {
+	          //fb_auth.innerHTML = 'Logout';
+	          fb_auth.onclick = function() {
+	            FB.logout(function(response) {
+	              alert('FB.logout callback '+ response);
+	            });
+	          };
+	        } else {
+	          //fb_auth.innerHTML = 'Login';
+	          fb_auth.onclick = function() {
+	            FB.login(function(response) {
+	              alert('FB.login callback '+ response);
+	              
+	             window.location = "/"
+	              
+	              if (response.session) {
+	                alert('User is logged in');
+	              } else {
+	                alert('User is logged out');
+	              }
+	            }, {perms:'email'});
+	          };
+	        }
+	      }
+	    
+	      // run it once with the current status and also whenever the status changes
+	      FB.getLoginStatus(updateButton);
+	      FB.Event.subscribe('auth.statusChange', updateButton);
+
+      };
+      
+      (function() {
+        var e = document.createElement('script');
+        e.async = true;
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        document.getElementById('fb-root').appendChild(e);
+      }());
+
+    </script>
+
+    <!-- Simple OpenID Selector -->
+    <!--http://alan.jin-nang.appspot.com/_ah/login_redir?claimid=google.com/accounts/o8/id&continue=http://alan.jin-nang.appspot.com/ -->
+    
+    <form action="_ah/login_redir" method="get" id="openid_form">
+        <fieldset>
+            <legend>Sign-in or Create New Account</legend>
+            <div id="openid_choice">
+                <p>Please click your account provider:</p>
+                <div id="openid_btns"></div>
+            </div>
+            <div id="openid_input_area">
+                <input id="openid_identifier" name="claimid" type="text" value="http://" />
+                <input id="openid_submit" type="submit" value="Sign-In"/>
+            </div>
+            <noscript>
+                <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
+                Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
+            </noscript>
+        </fieldset>
+        <input type="hidden" name="continue" value="{{ continue_url }}" />
+    </form>
+    <!-- /Simple OpenID Selector -->
+    
+</body>
+</html>
